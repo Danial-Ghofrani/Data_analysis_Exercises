@@ -148,35 +148,67 @@ import pandas as pd
 
 
 import yfinance as yf
-
-# z= np.array([1,2,3,None,4,5])
-# z= np.array([1,2,3,np.NaN,4,5])
-# #NaN is the same as none but it doesnt participate in operations so we will not get an error when we run z*5
-# print(z*5)
-
-# df.dropna()
-# df.dropna(inplace=True)
-# print(df)
-#
-# df.fillna(100,inplace=True)
-
-# print(df.duplicated())
-# print(df.drop_duplicates())
-
+import pandas as pd
+import numpy as np
 from persiantools.digits import fa_to_en
 from persiantools.jdatetime import JalaliDateTime
-from datetime import datetime
+# from datetime import datetime
+#
+# date_time = "۱۴۳۰۳-۰۵-۱۵"
+# # print(fa_to_en(date_time))
+# print(datetime.now())
+# print(JalaliDateTime(datetime.now()))
+#
+# print(JalaliDateTime(1403, 5, 15))
+# print(JalaliDateTime(1403, 5, 15).to_gregorian())
+#
+# print(JalaliDateTime(1403, 5, 15).isoweekday())
+#
+# print(JalaliDateTime.is_leap(1403))
+# print(JalaliDateTime.days_in_month(12, 1403))
 
-# how to add features to dataframe!
-# df["Benefit"] = df["Close"]-df["Open"]
+
+import pandas as pd
+from persiantools.jdatetime import JalaliDate
+
+# df = pd.read_csv("BTC-USD.CSV")
+# df["Date"] = pd.to_datetime(df["Date"])
+# df["Benefit"] = df["Close"] - df["Open"]
+# df["Tolerance"] = df["High"] - df["Low"]
+#
+# df["JalaliDate"] = df["Date"].apply(lambda d: JalaliDate(d))
+# df["JalaliMonth"] = df["Date"].apply(lambda d:JalaliDateTime(d).month)
+# df["JalaliWeekDay"] = df["Date"].apply(lambda d:JalaliDateTime(d).isoweekday())
+#
+# print(df)
+
+
+
+
 
 # data_list = [date(2020,1,12) , date(2020,1,6)]
 #
 #
-#
-# df["day1"] = df["amount"].shift(-1)
+df = pd.read_csv("BTC-USD.CSV")
 
+# df["day1"] = df["amount"].shift(-1)
 # df["amount"].rolling[3]
-#
 # sma = simple_moving_average:
 # sma_3 = df["amount"].rolling(3).mean()
+
+
+df["sma_21"] = df["Close"].rolling(21).mean()
+df["ema_21"] = df["Close"].ewm(span=28).mean()
+
+df.to_excel("result.xlsx")
+
+
+import matplotlib.pyplot as plt
+
+plt.plot(df["Close"], label="Close")
+plt.plot(df["sma_21"], label="sma")
+plt.plot(df["ema_21"], label="ema")
+
+
+plt.legend()
+plt.show()

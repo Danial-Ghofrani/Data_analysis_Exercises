@@ -1,15 +1,30 @@
-from flas
+from flask import Flask, request
+
+app = Flask(__name__)
+token = "abc123"
+@app.route("/person")
+def home():
+    #creating a pass for accessing data:
+    if request.args.get("token") == token:
+        return {"name":"ali", "family":"alipour"}
+    else:
+        return {"error":"Access Denied !!!"}
 
 
-import pandas as pd
-from matplotlib import
-from sklearn.preprocessing import LabelEncoder
-import seaborn as sns
+app.run(host="192.168.1.102", port=80, debug=True)
 
-df = pd.read_csv("pokemon_data.csv")
 
-encoder.tr
-#df.drop(columns=)
+# import pandas as pd
+# import requests
+# response = requests.get("https://jsonplaceholder.typicode.com/todos")
+# print(response)
+#
+#
+# data = response.json()
+#
+# for d in data:
+#     print(d["userId"], d["title"])
+#
+# data = pd.read_json(response.json())
 
-sns.pairplot(df, hue="HP")
-plt.show()
+from plotly import

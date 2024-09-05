@@ -90,9 +90,9 @@ class NewsSpider(scrapy.Spider):
 
 
 
-# process = CrawlerProcess()
-# process.crawl(NewsSpider)
-# process.start()
-NewsSpider.title_processing('news_data.csv')
+process = CrawlerProcess()
+process.crawl(NewsSpider)
+process.start()
+# NewsSpider.title_processing('news_data.csv')
 
 print(f' the operation took this amount of time:{datetime.now()-start}')

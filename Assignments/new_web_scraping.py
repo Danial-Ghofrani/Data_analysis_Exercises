@@ -14,12 +14,9 @@ class NewsSpider(scrapy.Spider):
     }
 
     def preprocess_date(self, date_str):
-        # Split the date string into parts
         parts = date_str.split()
-        # Check if the month part has a period
         if not parts[0].endswith('.'):
-            parts[0] = parts[0][:3] + '.'  # Abbreviate the month and add a period
-        # Rejoin the parts into a single string
+            parts[0] = parts[0][:3] + '.'
         date_str = ' '.join(parts)
         return date_str
 

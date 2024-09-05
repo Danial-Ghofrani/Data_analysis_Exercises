@@ -1,8 +1,9 @@
+import pandas as pd
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import csv
-import datetime
-start = datetime.datetime.now()
+from datetime import datetime
+start = datetime.now()
 class NewsSpider(scrapy.Spider):
     name = "news_spider"
     custom_settings = {
@@ -11,6 +12,23 @@ class NewsSpider(scrapy.Spider):
         'RETRY_TIMES': 3,  # Retry failed requests up to 3 times
         'HTTPERROR_ALLOWED_CODES': [404, 500],  # Handle specific HTTP errors
     }
+
+    def preprocess_date(self, date_str):
+        # Split the date string into parts
+        parts = date_str.split()
+        # Check if the month part has a period
+        if not parts[0].endswith('.'):
+            parts[0] = parts[0][:3] + '.'  # Abbreviate the month and add a period
+        # Rejoin the parts into a single string
+        date_str = ' '.join(parts)
+        return date_str
+
+    def title_processing(news_csv):
+        df = pd.read_csv(f'{news_csv}')
+        df = pd.DataFrame(df)
+        df = df.drop_duplicates(subset="Title")
+        df.to_csv('news_data.csv', index=False, encoding='utf-8')
+
 
     def start_requests(self):
         base_url = 'https://www.sciencedaily.com/news/plants_animals/'
@@ -59,16 +77,25 @@ class NewsSpider(scrapy.Spider):
 
         for title, link, summary, date in zip(news_titles, news_links, news_summaries, news_dates):
             if title and link and summary and date:
-                news_data.append([group, title.strip(), response.urljoin(link), summary.strip(), date.strip()])
+                date = self.preprocess_date(date)
+                date = date.split()
+                date = ' '.join(date[:-1])
+                date = datetime.strptime(date, '%b. %d, %Y')
+                news_data.append([group, title.strip(), response.urljoin(link), summary.strip(), date])
 
         with open('news_data.csv', 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['Group', 'Title', 'Link', 'Summary', 'Date'])
+            if f.tell() == 0:  # Check if the file is empty
+                writer.writerow(['Group', 'Title', 'Link', 'Summary', 'Date'])
             writer.writerows(news_data)
 
 
-process = CrawlerProcess()
-process.crawl(NewsSpider)
-process.start()
 
-print(f' the operation took this amount of time:{datetime.datetime.now()-start}')
+
+
+# process = CrawlerProcess()
+# process.crawl(NewsSpider)
+# process.start()
+NewsSpider.title_processing('news_data.csv')
+
+print(f' the operation took this amount of time:{datetime.now()-start}')
